@@ -11,10 +11,10 @@ The current version only supports even number of players.
 
 ### Installation
 
-1. Ensure you have Vagrant and VirtualBox installed
-2. Clone this repository `git clone https://github.com/minjiecode/fullstack-nanodegree-vm.git`
-3. Launch Vagrant
-4. Set your working directory to /vagrant/tournament (or wherever you copy the repo)
+1. Clone this repository `git clone https://github.com/minjiecode/fullstack-nanodegree-vm.git`
+2. Set your working directory to `etc/vagrant`
+3. Launch Vagrant by calling: `vagrant up` and `vagrant ssh`
+4. Set your working directory to `etc/vagrant/tournament`
 5. Launch psql by calling: `psql`
 6. Create and connect to the database, create tables and views by calling: `\i tournament.sql;`
 7. Close psql by calling: `\q`
