@@ -2,7 +2,7 @@
 
 **Restaurant catalogue** is a web application, in which users can view, add, edit, and delete a list of restaurants. 
 
-> \**This is a exercise project for the Udacity Nanodegree Course*
+> \**This is a class exercise for the Udacity Nanodegree Course*
 
 
 ### Installation
