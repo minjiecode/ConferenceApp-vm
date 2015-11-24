@@ -31,7 +31,7 @@ The current version only supports even number of players.
 
 ### Example
 
-    $ python -c "from tournament import *; registerPlayer("Mark")"    
+    $ python -c "from tournament import *; registerPlayer('Mark')"    
 
 ### Software Stack
 - Vagrant
