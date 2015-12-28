@@ -1,0 +1,23 @@
+	<div class="row top">
+		<div class="col-md-10 text-left">
+			<h1>DISCOVER VIRTUAL REALITY</h1>
+		</div>
+
+		<!-- Log-out button -->
+		<div class="col-md-2 text-center">
+			<button class = "btn" onclick="location.href='{{url_for('gdisconnect')}}'">LOG OUT</button>
+		</div>
+	
+	</div>	
+	
+	<div class = 'flash'>
+		{% with messages = get_flashed_messages() %}
+      		{% if messages %}
+        		<ul>
+        		{% for message in messages %}
+            		<li> {{ message }} </li>
+        		{% endfor %}
+        		</ul>
+        	{% endif %}
+    	{% endwith %}
+    </div>
