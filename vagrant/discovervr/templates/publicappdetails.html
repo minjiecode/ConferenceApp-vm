@@ -1,0 +1,14 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<div class = "app-detail">
+	<h2> {{app.name}} </h2>
+	<p> Developer: {{app.developer}}</p>
+	<p> Website: {{app.website}}</p>
+	<p> Description: {{app.description}}</p>
+	<p> Created_by: {{app.user.name}}</p>
+
+</div>
+
+{% endblock %}
