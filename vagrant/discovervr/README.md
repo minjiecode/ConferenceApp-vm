@@ -2,10 +2,6 @@
 
 **Discover Virtual Reality** is a web app that intend to be used as an archive for virtual reality apps. 
 The current version only supports even number of players. 
-- Register Players 
-- Record Match Result
-- Check Player Standing
-- Pair Players for match
 
 > \**This is a project for the Udacity Nanodegree Course*
 
@@ -23,7 +19,7 @@ The current version only supports even number of players.
 
 - Logged-in user can edit/add apps they created.
 
-### Software Stack
+### Tech Stack
 - Vagrant
 - VirtualBox
 - SQLAlchemy
