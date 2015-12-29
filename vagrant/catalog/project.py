@@ -56,8 +56,6 @@ def getUserID(email):
         return None
 
 
-
-
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
@@ -264,7 +262,7 @@ def showApp(category_name):
     if 'username' not in login_session:
         return render_template('publicapps.html', apps = apps, count = count_record, categories = categories, category=category)
     else:
-        return render_template('apps.html', items=items, Category=category, creator = creator) 
+        return render_template('apps.html', apps=apps, category=category,count = count_record, categories = categories) 
 
 @app.route('/category/<category_name>/<app_name>/')
 def showAppDetails(category_name, app_name):
@@ -292,19 +290,20 @@ def newApp():
 
 # Create a new App item within a category
 @app.route('/category/<category_name>/apps/new/', methods=['GET', 'POST'])
-def newAppInCategory(category_id):
+def newAppInCategory(category_name):
     if "username" not in login_session:
         return redirect('/login')
     category = session.query(Category).filter_by(name=category_name).one()
+    category_id = category.id
     if request.method == 'POST':
         newApp = App(name=request.form['name'], description=request.form[
-                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = Category_id)
-        session.add(newItem)
+                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = category_id,user_id = getUserID(login_session['email']))
+        session.add(newApp)
         session.commit()
-        flash('New App %s Item Successfully Created' % (newItem.name))
-        return redirect(url_for('showApp', Category_id=Category_id))
+        flash('New App %s Successfully Created' % (newApp.name))
+        return redirect(url_for('showApp', category_name=category_name))
     else:
-        return render_template('newApp.html', Category_id=Category_id)
+        return render_template('newAppInCategory.html', category_name=category.name)
 
 
 # Edit a App item

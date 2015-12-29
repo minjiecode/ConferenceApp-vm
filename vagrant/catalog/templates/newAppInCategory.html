@@ -1,0 +1,43 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header_login.html" %}
+
+<div class = "row">
+	<div class = "col-md-2">
+	</div>
+	<div class = "col-md-8">
+	<h1> New App in {{category_name}}</h1>
+
+	<form action = "#" method = "post">
+		<div class = "form-group">
+			<label for ='name'> Name: </label>
+			<input type = "text" maxlength = "50" class = "form-control" name = "name" placeholder = "Name of the App">
+
+			<label for ='developer'> Developer:</label>
+			<input type = "text" maxlength = "50" class = "form-control" name = "developer" placeholder = "John Doe">
+
+			<label for="description">Description:</label>
+			<textarea class="form-control" maxlength="250" rows="3" name="description" placeholder="Description of the App"></textarea>
+
+			<label for ='website'> Website: </label>
+			<input type = "text" maxlength = "80" class = "form-control" name = "website" placeholder = "http://">
+
+			<label for ='website'> Price: </label>
+			<input type = "text" maxlength = "80" class = "form-control" name = "price" placeholder = "Free">
+
+  			<div align = "middle">
+  			  <a href ="{{url_for('showApp', category_name=category_name)}}">Go Back</a> <span>
+  			<button type="submit" class="btn large">Create</button></span>
+  		</div>
+  	</div>
+  	</form>
+ </div>
+ <div class = "col-md-2">
+ </div>
+</div>
+
+
+
+
+{% endblock %}
+

@@ -1,6 +1,6 @@
 {% extends "main.html" %}
 {% block content %}
-{% include "header.html" %}
+{% include "header_login.html" %}
 
 <div class = "app-detail">
 	<h2> {{app.name}} </h2>
@@ -8,7 +8,7 @@
 	<p> Website: <a href = "{{app.website}}">{{app.website}}</a></p>
 	<p> Description: {{app.description}}</p>
 	<p> Price: {{app.price}}
-	<p> Created by User:   <image src ='{{app.user.picture}}' style ="width: 30px; height: 30px; border-radius: 15px;">  {{app.user.name}} </p>
+	<p> Entry by User:   <image src ='{{app.user.picture}}' style ="width: 30px; height: 30px; border-radius: 15px;">  {{app.user.name}} </p>
 
 	
 
