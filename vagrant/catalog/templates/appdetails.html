@@ -5,10 +5,29 @@
 <div class = "app-detail">
 	<h2> {{app.name}} </h2>
 	<p> Developer: {{app.developer}}</p>
-	<p> Website: {{app.website}}</p>
+	<p> Website: <a href = "{{app.website}}">{{app.website}}</a></p>
 	<p> Description: {{app.description}}</p>
-	<p> <a href = "#"> EDIT </a> | <a href = "#"> DELETE </a></p>
+	<p> Price: {{app.price}}
+	<p> Created by User:   <image src ='{{app.user.picture}}' style ="width: 30px; height: 30px; border-radius: 15px;">  {{app.user.name}} </p>
+
+	
 
 </div>
+
+
+
+<div class = 'row'>
+
+	<button class ='btn' onclick="goBack()">Go Back</button>
+</div>
+
+
+<!-- Go Back Button function -->
+
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
 
 {% endblock %}

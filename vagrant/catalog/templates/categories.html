@@ -9,20 +9,8 @@
 		<!-- Log-out button -->
 		<div class="col-md-2 text-center">
 			<button class = "btn" onclick="location.href='{{url_for('gdisconnect')}}'">LOG OUT</button>
-			<!-- <button id="modal_trigger" href="#modal" class = "btn">LOG OUT</button> -->
 		</div>
-	
-		<!-- modal popup container -->
-<!-- 		<div id="modal" class="popupContainer" style="display:none">
-				<header class="popupHeader">
-					<span class="header_title">Login</span>
-					<span class="modal_close"><i class="fa fa-times"></i></span>
-				</header>
-			    <section class="popupBody">
-					<div id = "result"></div>
-			    </section>
-		</div> -->
-	</div>	
+	</div>
 	
 	<div class = 'flash'>
 		{% with messages = get_flashed_messages() %}
@@ -54,7 +42,7 @@
 	</div>
 
 	<div class = "col-md-9 panel-right inside-full-height">
-		<a href = "#"> <p> Add Item </p> <a>
+		<a href ='/category/apps/new/'> <p> Add Item </p> <a>
 		<h2> Latest Items </h2>
 		{% for app in apps %}
 			<a href = "{{url_for('showAppDetails', category_name = app.category.name, app_name = app.name)}}">

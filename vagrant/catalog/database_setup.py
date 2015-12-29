@@ -58,7 +58,8 @@ class App(Base):
            'developer'         : self.developer,
            'website'         : self.website,
            'category id'         : self.category_id,
-           'creator id'         : self.user_id
+           'creator id'         : self.user_id,
+           'price'            : self.price
        }
 
 

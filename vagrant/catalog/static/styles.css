@@ -125,6 +125,13 @@ h3 {
 	border-width: 2px;
 	color: #FFFFFF;
 }
+
+.btn.large {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+
 .btn:hover {
 	border-color: #E3F2FD;
 	background-color: #BBDEFB;
@@ -249,6 +256,6 @@ ul {
 	color:#ffffff;
 }
 
-.modal_close {
-	color: #424242;
+label {
+	color: #ffffff;
 }

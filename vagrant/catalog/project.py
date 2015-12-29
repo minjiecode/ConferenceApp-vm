@@ -275,21 +275,37 @@ def showAppDetails(category_name, app_name):
     else:
         return render_template('appdetails.html', app = app)
 
-# Create a new App item
-@app.route('/category/<int:Category_id>/apps/new/', methods=['GET', 'POST'])
-def newApp(category_id):
+# Create a new App item global
+@app.route('/category/apps/new/', methods=['GET', 'POST'])
+def newApp():
     if "username" not in login_session:
         return redirect('/login')
-    category = session.query(Category).filter_by(id=category_id).one()
     if request.method == 'POST':
-        newItem = App(name=request.form['name'], description=request.form[
-                           'description'], price=request.form['price'], course=request.form['course'], Category_id=Category_id)
+        newApp = App(name=request.form['name'], description=request.form[
+                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = request.form["category_id"], user_id = getUserID(login_session['email']))
+        session.add(newApp)
+        session.commit()
+        flash('New App %s Successfully Created' % (newApp.name))
+        return redirect("/")
+    else:
+        return render_template('newApp.html')
+
+# Create a new App item within a category
+@app.route('/category/<category_name>/apps/new/', methods=['GET', 'POST'])
+def newAppInCategory(category_id):
+    if "username" not in login_session:
+        return redirect('/login')
+    category = session.query(Category).filter_by(name=category_name).one()
+    if request.method == 'POST':
+        newApp = App(name=request.form['name'], description=request.form[
+                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = Category_id)
         session.add(newItem)
         session.commit()
         flash('New App %s Item Successfully Created' % (newItem.name))
         return redirect(url_for('showApp', Category_id=Category_id))
     else:
         return render_template('newApp.html', Category_id=Category_id)
+
 
 # Edit a App item
 
