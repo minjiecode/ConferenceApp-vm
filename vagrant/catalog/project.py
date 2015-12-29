@@ -6,9 +6,6 @@ from flask import session as login_session
 import random
 import string
 
-#to be deleted
-import os
-
 # IMPORTS FOR THIS STEP
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -264,14 +261,15 @@ def showApp(category_name):
     else:
         return render_template('apps.html', apps=apps, category=category,count = count_record, categories = categories) 
 
-@app.route('/category/<category_name>/<app_name>/')
+@app.route('/category/<category_name>/apps/<app_name>/')
 def showAppDetails(category_name, app_name):
     app = session.query(App).filter_by(name = app_name).one()
+    category = session.query(Category).filter_by(name = category_name).one()
     creator = getUserInfo(app.user_id)
     if 'username' not in login_session or creator.id !=login_session['user_id']:
         return render_template('publicappdetails.html', app = app)
     else:
-        return render_template('appdetails.html', app = app)
+        return render_template('appdetails.html', app = app, category = category)
 
 # Create a new App item global
 @app.route('/category/apps/new/', methods=['GET', 'POST'])
@@ -279,8 +277,12 @@ def newApp():
     if "username" not in login_session:
         return redirect('/login')
     if request.method == 'POST':
+        name = request.form['name']
+        if session.query(App).filter_by(name =name).one():
+            flash("An App with the same name existed.")
+            return redirect(url_for('newApp'))
         newApp = App(name=request.form['name'], description=request.form[
-                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = request.form["category_id"], user_id = getUserID(login_session['email']))
+                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = request.form["category_id"], user_id = login_session['user_id'])
         session.add(newApp)
         session.commit()
         flash('New App %s Successfully Created' % (newApp.name))
@@ -296,39 +298,48 @@ def newAppInCategory(category_name):
     category = session.query(Category).filter_by(name=category_name).one()
     category_id = category.id
     if request.method == 'POST':
-        newApp = App(name=request.form['name'], description=request.form[
-                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = category_id,user_id = getUserID(login_session['email']))
-        session.add(newApp)
-        session.commit()
-        flash('New App %s Successfully Created' % (newApp.name))
-        return redirect(url_for('showApp', category_name=category_name))
+        # Check if the app existed.
+        name = request.form['name']
+        if session.query(App).filter_by(name =name).one():
+            flash("An App with the same name existed.")
+            return redirect(url_for('newAppInCategory', category_name = category.name))
+        else:
+            newApp = App(name=request.form['name'], description=request.form[
+                               'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = category_id,user_id = login_session['user_id'])
+            session.add(newApp)
+            session.commit()
+            flash('New App %s Successfully Created' % (newApp.name))
+            return redirect(url_for('showApp', category_name=category_name))
     else:
-        return render_template('newAppInCategory.html', category_name=category.name)
-
+        return render_template('newappincategory.html', category_name=category.name)
 
 # Edit a App item
 
 
-@app.route('/Category/<int:Category_id>/App/<int:App_id>/edit', methods=['GET', 'POST'])
-def editApp(category_id, App_id):
-
-    editedItem = session.query(App).filter_by(id=App_id).one()
-    Category = session.query(Category).filter_by(id=Category_id).one()
+@app.route('/category/<category_name>/apps/<app_name>/edit', methods=['GET', 'POST'])
+def editApp(category_name, app_name):
+    editedapp = session.query(App).filter_by(name = app_name).one()
+    category = session.query(Category).filter_by(name = category_name).one()
     if request.method == 'POST':
         if request.form['name']:
-            editedItem.name = request.form['name']
+            editedapp.name = request.form['name']
         if request.form['description']:
-            editedItem.description = request.form['description']
+            editedapp.description = request.form['description']
+        if request.form['website']:
+            editedapp.website = request.form['website']
+        if request.form['developer']:
+            editedapp.developer = request.form['developer']
         if request.form['price']:
-            editedItem.price = request.form['price']
-        if request.form['course']:
-            editedItem.course = request.form['course']
-        session.add(editedItem)
+            editedapp.price = request.form['price']
+        if request.form['category_id'] != category.id:
+            editedapp.category_id = request.form['category_id']
+            category = session.query(Category).filter_by(id = editedapp.category_id).one()
+        session.add(editedapp)
         session.commit()
-        flash('App Item Successfully Edited')
-        return redirect(url_for('showApp', Category_id=Category_id))
+        flash('App Successfully Edited')
+        return redirect(url_for('showAppDetails', category_name = category.name, app_name = editedapp.name))
     else:
-        return render_template('editApp.html', Category_id=Category_id, App_id=App_id, item=editedItem)
+        return render_template('editApp.html', category = category, app = editedapp)
 
 
 # Delete a App item

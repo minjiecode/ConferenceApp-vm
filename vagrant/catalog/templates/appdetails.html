@@ -2,32 +2,28 @@
 {% block content %}
 {% include "header_login.html" %}
 
-<div class = "app-detail">
+<div class = "row">
+	<div class = 'col-md-3'></div>
+
+<div class = "col-md-6">
 	<h2> {{app.name}} </h2>
 	<p> Developer: {{app.developer}}</p>
 	<p> Website: <a href = "{{app.website}}">{{app.website}}</a></p>
 	<p> Description: {{app.description}}</p>
 	<p> Price: {{app.price}}
-	<p> Entry by User:   <image src ='{{app.user.picture}}' style ="width: 30px; height: 30px; border-radius: 15px;">  {{app.user.name}} </p>
+	<div>
+		<button class = 'btn' style = "background-color:#FF5722" onclick ="location.href='{{url_for('editApp', category_name = category.name, app_name = app.name)}}'"> EDIT </button>
+		<button class = 'btn' style = "background-color:#FF5722" href = "#"> DELETE </button>
+	</div>
 
-	
+
+	<button class ='btn' onclick="location.href='{{url_for('showApp', category_name = category.name)}}'">Go to the Category</button>
 
 </div>
 
 
 
-<div class = 'row'>
+<div class = 'col-md-3'></div>
 
-	<button class ='btn' onclick="goBack()">Go Back</button>
-</div>
-
-
-<!-- Go Back Button function -->
-
-<script>
-function goBack() {
-    window.history.back();
-}
-</script>
 
 {% endblock %}
