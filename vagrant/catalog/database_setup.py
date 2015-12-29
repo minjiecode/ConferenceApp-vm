@@ -29,7 +29,7 @@ class Category(Base):
        """Return object data in easily serializeable format"""
        return {
            'name'         : self.name,
-           'id'           : self.id,
+           'id'           : self.id
        }
 
 # Record App name and details 
@@ -52,11 +52,13 @@ class App(Base):
     def serialize(self):
        """Return object data in easily serializeable format"""
        return {
-           'name'         : self.name,
+           'app name'         : self.name,
            'description'         : self.description,
-           'id'         : self.id,
-           'price'         : self.price,
-           'website'         : self.website
+           'APP ID'         : self.id,
+           'developer'         : self.developer,
+           'website'         : self.website,
+           'category id'         : self.category_id,
+           'creator id'         : self.user_id
        }
 
 

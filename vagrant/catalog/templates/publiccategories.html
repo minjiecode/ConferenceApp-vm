@@ -34,20 +34,17 @@
 		</div>	
 	</div>
 	<div class = 'flash'>
-		 {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages() %}
       {% if messages %}
-          
         <ul>
-        {% for message in messages %}
-            <li> {{ message }} </li>
-        {% endfor %}
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
         </ul>
-        {% endif %}
+      {% endif %}
     {% endwith %}
     </div>
-<!--     <div class="row divider">
-	<div class="col-md-12"></div>
-</div> -->
+
 
 <div class = "row">
 
@@ -55,11 +52,9 @@
 		{% for category in categories %}
 			<a href = "{{url_for('showApp', category_name = category.name)}}">
 			<div class="row">
-<!-- 				<div class="col-md-1 "></div> -->
 					<div class="col-md-12 category-list">
 						<h3>{{category.name}}</h3>
 					</div>
-<!-- 				<div class="col-md-1"></div> -->
 			</div>
 			</a>
 		{% endfor %}
@@ -68,53 +63,28 @@
 	<div class = "col-md-9 panel-right inside-full-height">
 		<h2> Latest Items </h2>
 		{% for app in apps %}
-			<a href = "{{url_for('showAppDetails', category_name = app.category.name, app_name = app.name)}}">
-			<p> {{app.name}} <span style = "color: #FF5722"><em>({{app.category.name}})</em></span></p>
-			</a>
+			
+			<p><a href = "{{url_for('showAppDetails', category_name = app.category.name, app_name = app.name)}}"> {{app.name}} <span style = "color: #FF5722"><em>({{app.category.name}})</em></span></a></p>
+			
 		{% endfor %}
 	</div>
 
 </div>
 
+<!-- Modal Popup -->
 <script>
 
 $("#modal_trigger").leanModal({top : 200, overlay : 0.6, closeButton: ".modal_close" });
 
-$(function () {
-    // Calling Login Form
-    $("#login_form").click(function () {
-        $(".social_login").hide();
-        $(".user_login").show();
-        return false;
-    });
-
-    // Calling Register Form
-    $("#register_form").click(function () {
-        $(".social_login").hide();
-        $(".user_register").show();
-        $(".header_title").text('Register');
-        return false;
-    });
-
-    // Going back to Social Forms
-    $(".back_btn").click(function () {
-        $(".user_login").hide();
-        $(".user_register").hide();
-        $(".social_login").show();
-        $(".header_title").text('Login');
-        return false;
-    });
-
-})
 </script>
 
-
+<!-- Google oauth -->
 <script>
 function signInCallback(authResult) {
   if (authResult['code']) {
 
     // Hide the sign-in button now that the user is authorized
-    $('#signinButton').attr('style', 'display: none');
+    $('#signInButton').attr('style', 'display: none');
 
     // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
     $.ajax({
@@ -129,7 +99,7 @@ function signInCallback(authResult) {
           $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
          setTimeout(function() {
           window.location.href = "/category";
-         }, 4000);
+         }, 3000);
       	} else if (authResult['error']) {
     		console.log('There was an error: ' + authResult['error']);
  		} else {

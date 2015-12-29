@@ -6,6 +6,9 @@ from flask import session as login_session
 import random
 import string
 
+#to be deleted
+import os
+
 # IMPORTS FOR THIS STEP
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -71,9 +74,9 @@ def showLogin():
         output += '!</h1>'
         output += '<img src="'
         output += login_session['picture']
-        output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-        output += '<script>setTimeout(function(){ window.location.href="/category";}, 3000)</script>'
-        flash("you are now logged in as %s" % login_session['username'])
+        output += ' " style = "width: 200px; height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+        output += '<script>setTimeout(function(){ window.location.href="/category";}, 2000)</script>'
+        flash("You are now logged in as %s" % login_session['username'])
         print "done!"
         return output
    
@@ -145,14 +148,13 @@ def gconnect():
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return response
-
     # Store the access token in the session for later use.
-    login_session['credentials'] = credentials.access_token
+    login_session['credentials'] = access_token
     login_session['gplus_id'] = gplus_id
 
     # Get user info
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
-    params = {'access_token': credentials.access_token, 'alt': 'json'}
+    params = {'access_token': access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
@@ -168,13 +170,13 @@ def gconnect():
     login_session['user_id'] = user_id
 
     output = ''
-    output += '<h1>Welcome, '
+    output += '<p style = "color: #000000;">Welcome, '
     output += login_session['username']
-    output += '!</h1>'
+    output += '!</p>'
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 100px; height: 100px;border-radius: 50px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
+    flash("You are now logged in as %s" % login_session['username'])
     print "done!"
     return output
 
@@ -194,20 +196,16 @@ def gdisconnect():
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['credentials']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print 'result is '
-    print result
+    # print 'result is '
+    # print result
     if result['status'] == '200':
         del login_session['credentials'] 
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        output = "You are logged out"
-        output += '<script>setTimeout(function(){ window.location.href="/category";}, 3000)</script>'
-        return output
-        # response = make_response(json.dumps('Successfully disconnected.'), 200)
-        # response.headers['Content-Type'] = 'application/json'
-        # return response
+        flash("Successfully disconnected!")
+        return redirect("/category")
     else:
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
@@ -215,24 +213,25 @@ def gdisconnect():
 
 
 # JSON APIs to view Category Information
-@app.route('/category/<int:category_id>/apps/JSON')
-def CategoryAppJSON(category_id):
-    category = session.query(Category).filter_by(id=category_id).one()
-    items = session.query(App).filter_by(
+@app.route('/category/<category_name>/apps/JSON')
+def categoryAppJSON(category_name):
+    category = session.query(Category).filter_by(name = category_name).one()
+    category_id = category.id
+    apps = session.query(App).filter_by(
         category_id=category_id).all()
-    return jsonify(Apps=[i.serialize for i in items])
+    return jsonify(apps=[i.serialize for i in apps])
 
 
-@app.route('/Category/<int:Category_id>/App/<int:App_id>/JSON')
-def AppJSON(category_id, app_id):
-    app_item = session.query(App).filter_by(id=app_id).one()
-    return jsonify(app_item=app_item.serialize)
+@app.route('/category/<category_name>/apps/<app_name>/JSON')
+def appJSON(category_name, app_name):
+    app = session.query(App).filter_by(name = app_name).one()
+    return jsonify(app=app.serialize)
 
 
-@app.route('/Category/JSON')
-def CategoriesJSON():
-    Categories = session.query(Category).all()
-    return jsonify(Categories=[r.serialize for r in Categories])
+@app.route('/category/JSON')
+def categoriesJSON():
+    categories = session.query(Category).all()
+    return jsonify(categories=[r.serialize for r in categories])
 
 
 # Show all Categories
@@ -242,7 +241,6 @@ def showCategories():
     categories = session.query(Category).order_by(asc(Category.name))
     apps = session.query(App).order_by(App.id.desc()).limit(10)
     if 'username' in login_session:
-        flash("you are now logged in as %s" % login_session['username'])
         return render_template('categories.html', categories = categories, apps = apps)
     else:
         state = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -250,56 +248,7 @@ def showCategories():
         login_session['state'] = state
         return render_template('publiccategories.html', STATE = state, categories=categories, apps= apps)
 
-# Create a new Category
-
-# @app.route('/category/new/', methods=['GET', 'POST'])
-# def newCategory():
-#     if request.method == 'POST':
-#         newCategory = Category(name=request.form['name'])
-#         user_id = login_session['user_id']
-#         session.add(newCategory)
-#         flash('New Category %s Successfully Created' % newCategory.name)
-#         session.commit()
-#         return redirect(url_for('showCategories'))
-#     else:
-#         return render_template('newcategory.html')
-
-# Edit a Category
-
-# @app.route('/category/<int:Category_id>/edit/', methods=['GET', 'POST'])
-# def editCategory(category_id):
-#     editedCategory = session.query(
-#         Category).filter_by(id=category_id).one()
-#     user_id = editedCategory.user_id
-#     if login_session['user_id'] == user_id:
-#         if request.method == 'POST':
-#             if request.form['name']:
-#                 editedcategory.name = request.form['name']
-#                 flash('Category Successfully Edited %s' % editedcategory.name)
-#                 return redirect(url_for('showCategories'))
-#         else:
-#             return render_template('editcategory.html', category=editedcategory)
-#     else:
-#         flash('You do not have authorization to edit this page')
-#         return redirect(url_for('showCategories'))
-
-
-# Delete a Category
-# @app.route('/Category/<int:Category_id>/delete/', methods=['GET', 'POST'])
-# def deleteCategory(Category_id):
-#     CategoryToDelete = session.query(
-#         Category).filter_by(id=Category_id).one()
-#     if request.method == 'POST':
-#         session.delete(CategoryToDelete)
-#         flash('%s Successfully Deleted' % CategoryToDelete.name)
-#         session.commit()
-#         return redirect(url_for('showcategories', Category_id=Category_id))
-#     else:
-#         return render_template('deletecategory.html', Category=CategoryToDelete)
-
-# Show a Category App
-
-
+# Show apps in a specific category
 @app.route('/category/<category_name>/')
 @app.route('/category/<category_name>/apps/')
 def showApp(category_name):
@@ -319,8 +268,7 @@ def showApp(category_name):
 
 @app.route('/category/<category_name>/<app_name>/')
 def showAppDetails(category_name, app_name):
-    category = session.query(Category).filter_by(name = category_name).one()
-    app = session.query(App).filter_by(category_id = category.id, name = app_name).one()
+    app = session.query(App).filter_by(name = app_name).one()
     creator = getUserInfo(app.user_id)
     if 'username' not in login_session or creator.id !=login_session['user_id']:
         return render_template('publicappdetails.html', app = app)
@@ -328,7 +276,7 @@ def showAppDetails(category_name, app_name):
         return render_template('appdetails.html', app = app)
 
 # Create a new App item
-@app.route('/category/<int:Category_id>/App/new/', methods=['GET', 'POST'])
+@app.route('/category/<int:Category_id>/apps/new/', methods=['GET', 'POST'])
 def newApp(category_id):
     if "username" not in login_session:
         return redirect('/login')

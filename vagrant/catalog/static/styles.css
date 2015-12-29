@@ -44,6 +44,10 @@ h3 {
  	line-height: 17px;
  }
 
+ a:hover {
+ 	color: #2196F3;
+ }
+
  li {
  	color:#ffffff;
  	font-weight:100;
@@ -243,4 +247,8 @@ h3 {
 
 ul {
 	color:#ffffff;
+}
+
+.modal_close {
+	color: #424242;
 }
