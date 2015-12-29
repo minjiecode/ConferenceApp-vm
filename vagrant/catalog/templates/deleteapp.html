@@ -1,17 +1,22 @@
 {% extends "main.html" %}
 {% block content %}
-{% include "header.html" %}
-<h2> Are you sure you want to delete {{item.name}}? </h2>
+{% include "header_login.html" %}
+
+<div class = "row">
+	<div class = "col-md-3">
+	</div>
+	<div class = "col-md-6">
+	<h3> Are you sure you want to delete {{app.name}} in {{category.name}} ?</h3>
 
 <form action="#" method = 'post'>
-
-	<button type="submit" class="btn btn-default delete" id="submit" type="submit">
-	<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</button>
-	<a href = '{{url_for('showRestaurants')}}'>
-		<button class="btn btn-default delete">
-		<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-	</a>
+	<a href ="{{url_for('showAppDetails', category_name = category.name, app_name = app.name)}}" align ="left">Cancel</a> 
+	
+	<button type="submit" class="btn" style = "background-color: #D50000" align = "right">Delete</button>
 
 </form>
+
+	<div class = "col-md-3">
+	</div>
+
 
 {% endblock %}

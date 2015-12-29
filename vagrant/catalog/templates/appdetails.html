@@ -11,13 +11,11 @@
 	<p> Website: <a href = "{{app.website}}">{{app.website}}</a></p>
 	<p> Description: {{app.description}}</p>
 	<p> Price: {{app.price}}
-	<div>
-		<button class = 'btn' style = "background-color:#FF5722" onclick ="location.href='{{url_for('editApp', category_name = category.name, app_name = app.name)}}'"> EDIT </button>
-		<button class = 'btn' style = "background-color:#FF5722" href = "#"> DELETE </button>
+	<div align = "left">
+		<button class = 'btn' onclick ="location.href='{{url_for('editApp', category_name = category.name, app_name = app.name)}}'"> EDIT </button>
+		<button class = 'btn' style = "background-color:#D50000" onclick = "location.href='{{url_for('deleteApp', category_name = category.name, app_name = app.name)}}'"> DELETE </button>
 	</div>
-
-
-	<button class ='btn' onclick="location.href='{{url_for('showApp', category_name = category.name)}}'">Go to the Category</button>
+	<h3><a href="{{url_for('showApp', category_name = category.name)}}">Go to the {{category.name}}</a></h3>
 
 </div>
 

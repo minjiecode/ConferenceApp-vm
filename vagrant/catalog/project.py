@@ -37,7 +37,9 @@ def getUserInfo(user_id):
     return user
 
 def createUsers(login_session):
-    newUser = User(name = login_session['username'], email = login_session['email'], picture = login_session['picture'])
+    newUser = User(name = login_session['username'], 
+        email = login_session['email'], 
+        picture = login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email = login_session['email']).one()
@@ -69,12 +71,19 @@ def showLogin():
         output += '!</h1>'
         output += '<img src="'
         output += login_session['picture']
-        output += ' " style = "width: 200px; height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-        output += '<script>setTimeout(function(){ window.location.href="/category";}, 2000)</script>'
+        output += """
+        style = "width: 200px; height: 200px;border-radius: 150px;
+        -webkit-border-radius: 150px;-moz-border-radius: 150px;"> 
+        """
+        output += """
+        <script>setTimeout(function(){ 
+            window.location.href='/category';}, 2000)</script>
+        """
         flash("You are now logged in as %s" % login_session['username'])
         print "done!"
         return output
-   
+
+# Reset Session  
 @app.route('/clearsession') 
 def clearSession():
     del login_session['credentials'] 
@@ -86,6 +95,7 @@ def clearSession():
     output += '<script>setTimeout(function(){ window.location.href="/category";}, 3000)</script>'
     return output
 
+# Google OAuth
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -139,7 +149,8 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
+        response = make_response(json.dumps(
+            'Current user is already connected.'),
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -170,7 +181,10 @@ def gconnect():
     output += '!</p>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 100px; height: 100px;border-radius: 50px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += """
+    "style = "width: 100px; height: 100px;border-radius: 50px;
+    -webkit-border-radius: 150px;-moz-border-radius: 150px;"> 
+    """
     flash("You are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -185,10 +199,11 @@ def gdisconnect():
     print login_session['username']
     if access_token is None:
         print 'Access Token is None'
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(
+            json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['credentials']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s'% login_session['credentials']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     # print 'result is '
@@ -202,7 +217,8 @@ def gdisconnect():
         flash("Successfully disconnected!")
         return redirect("/category")
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(json.dumps(
+            'Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -236,16 +252,18 @@ def showCategories():
     categories = session.query(Category).order_by(asc(Category.name))
     apps = session.query(App).order_by(App.id.desc()).limit(10)
     if 'username' in login_session:
-        return render_template('categories.html', categories = categories, apps = apps)
+        return render_template(
+            'categories.html', categories = categories, apps = apps)
     else:
         state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
         login_session['state'] = state
-        return render_template('publiccategories.html', STATE = state, categories=categories, apps= apps)
+        return render_template('publiccategories.html', STATE = state, 
+            categories=categories, apps= apps)
 
 # Show apps in a specific category
 @app.route('/category/<category_name>/')
-@app.route('/category/<category_name>/apps/')
+# @app.route('/category/<category_name>/apps/')
 def showApp(category_name):
     categories = session.query(Category).order_by(asc(Category.name))
     category = session.query(Category).filter_by(name = category_name).one()
@@ -257,9 +275,11 @@ def showApp(category_name):
     else:
         count_record = str(count) + " Apps"
     if 'username' not in login_session:
-        return render_template('publicapps.html', apps = apps, count = count_record, categories = categories, category=category)
+        return render_template('publicapps.html', apps = apps, 
+            count = count_record, categories = categories, category=category)
     else:
-        return render_template('apps.html', apps=apps, category=category,count = count_record, categories = categories) 
+        return render_template('apps.html', apps=apps, category=category,
+            count = count_record, categories = categories) 
 
 @app.route('/category/<category_name>/apps/<app_name>/')
 def showAppDetails(category_name, app_name):
@@ -278,11 +298,15 @@ def newApp():
         return redirect('/login')
     if request.method == 'POST':
         name = request.form['name']
-        if session.query(App).filter_by(name =name).one():
+        if session.query(App).filter_by(name = name).count():
             flash("An App with the same name existed.")
             return redirect(url_for('newApp'))
         newApp = App(name=request.form['name'], description=request.form[
-                           'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = request.form["category_id"], user_id = login_session['user_id'])
+                           'description'], price=request.form['price'], 
+                           website=request.form['website'], 
+                           developer = request.form['developer'], 
+                           category_id = request.form["category_id"], 
+                           user_id = login_session['user_id'])
         session.add(newApp)
         session.commit()
         flash('New App %s Successfully Created' % (newApp.name))
@@ -300,23 +324,31 @@ def newAppInCategory(category_name):
     if request.method == 'POST':
         # Check if the app existed.
         name = request.form['name']
-        if session.query(App).filter_by(name =name).one():
+        if session.query(App).filter_by(name = name).count():
             flash("An App with the same name existed.")
-            return redirect(url_for('newAppInCategory', category_name = category.name))
+            return redirect(url_for('newAppInCategory', 
+                category_name = category.name))
         else:
-            newApp = App(name=request.form['name'], description=request.form[
-                               'description'], price=request.form['price'], website=request.form['website'], developer = request.form['developer'], category_id = category_id,user_id = login_session['user_id'])
+            newApp = App(name=request.form['name'], 
+                description=request.form['description'], 
+                price=request.form['price'], 
+                website=request.form['website'], 
+                developer = request.form['developer'], 
+                category_id = category_id,
+                user_id = login_session['user_id'])
             session.add(newApp)
             session.commit()
             flash('New App %s Successfully Created' % (newApp.name))
             return redirect(url_for('showApp', category_name=category_name))
     else:
-        return render_template('newappincategory.html', category_name=category.name)
+        return render_template('newappincategory.html', 
+            category_name=category.name)
 
 # Edit a App item
 
 
-@app.route('/category/<category_name>/apps/<app_name>/edit', methods=['GET', 'POST'])
+@app.route('/category/<category_name>/apps/<app_name>/edit', 
+    methods=['GET', 'POST'])
 def editApp(category_name, app_name):
     editedapp = session.query(App).filter_by(name = app_name).one()
     category = session.query(Category).filter_by(name = category_name).one()
@@ -333,27 +365,32 @@ def editApp(category_name, app_name):
             editedapp.price = request.form['price']
         if request.form['category_id'] != category.id:
             editedapp.category_id = request.form['category_id']
-            category = session.query(Category).filter_by(id = editedapp.category_id).one()
+            category = session.query(Category).filter_by(
+                id = editedapp.category_id).one()
         session.add(editedapp)
         session.commit()
         flash('App Successfully Edited')
-        return redirect(url_for('showAppDetails', category_name = category.name, app_name = editedapp.name))
+        return redirect(url_for('showAppDetails', 
+            category_name = category.name, app_name = editedapp.name))
     else:
-        return render_template('editApp.html', category = category, app = editedapp)
+        return render_template('editApp.html', 
+            category = category, app = editedapp)
 
 
 # Delete a App item
-@app.route('/Category/<int:Category_id>/App/<int:App_id>/delete', methods=['GET', 'POST'])
-def deleteApp(Category_id, App_id):
-    Category = session.query(Category).filter_by(id=Category_id).one()
-    itemToDelete = session.query(App).filter_by(id=App_id).one()
+@app.route('/category/<category_name>/apps/<app_name>/delete', 
+    methods=['GET', 'POST'])
+def deleteApp(category_name, app_name):
+    category = session.query(Category).filter_by(name=category_name).one()
+    appToDelete = session.query(App).filter_by(name = app_name).one()
     if request.method == 'POST':
-        session.delete(itemToDelete)
+        session.delete(appToDelete)
         session.commit()
-        flash('App Item Successfully Deleted')
-        return redirect(url_for('showApp', Category_id=Category_id))
+        flash('App Successfully Deleted')
+        return redirect(url_for('showApp', category_name= category.name))
     else:
-        return render_template('deleteApp.html', item=itemToDelete)
+        return render_template('deleteApp.html', 
+            category = category, app=appToDelete)
 
 
 if __name__ == '__main__':
