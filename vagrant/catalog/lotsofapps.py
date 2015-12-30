@@ -75,6 +75,11 @@ app1 = App(user_id=2, name="Rexodus VR", developer = "Steelehouse Productions", 
 session.add(app1)
 session.commit()
 
+app2 = App(user_id = 1, name = "SONAR", developer = "Phillipp Maas", description="Explore your surroundings and dive deep into an ancient cave system. Follow the drone ship and discover the horrific truth about the darkest of all places...", price = "Unknown", category = category2)
+
+session.add(app2)
+session.commit()
+
 
 # Apps for Education
 
@@ -113,6 +118,17 @@ app1 = App(user_id=4, name="Casino VR: Poker (Beta)", developer = "Casino VR Ltd
 
 
 session.add(app1)
+session.commit()
+
+app2 = App(user_id = 3, name = "InCell", developer = "Nival VR", 
+	description="InCell is a non-trivial combination of pipe styled racing and exploration strategy genres in highly unusual micro world of the carefully recreated human cell.", price = "Unknown", website = "http://incell.nivalvr.com/", category = category5)
+
+session.add(app2)
+session.commit()
+
+app3 = App(user_id=2, name = "Pinball Labs", developer = "Thomas Kadlec", website = "http://pinballlabs.com/", description="Recreating the Physics, Visuals and Fun of Real World Pinball.", price = "Unknown", category = category5)
+
+session.add(app3)
 session.commit()
 
 print "VR Apps added! "

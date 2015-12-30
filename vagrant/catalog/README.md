@@ -11,7 +11,9 @@ The current version only supports even number of players.
 - Clone the [fullstack-nanodegree-vm repository](https://github.com/minjiecode/fullstack-nanodegree-vm.git).
 - Launch the Vagrant VM (by typing vagrant up in the directory fullstack/vagrant from the terminal). You can find further instructions on how to do so [here](https://www.udacity.com/wiki/ud088/vagrant&sa=D&usg=AFQjCNGjziK6w6-UY9XKG-UbQhv7GDwbzw).
 - Go to the /vagrant/catalog directory
-- Run your application within the VM by typing python /vagrant/catalog/application.py into the Terminal. 
+- Build up the database by typing `python /vagrant/catalog/database_setup.py` into the Terminal.
+- (Optional) Populate the database by typing `python /vagrant/catalog/lotsofapps.py`
+- Run your application within the VM by typing python /vagrant/catalog/project.py`. 
 - Access and the application by visiting http://localhost:8000 locally on your browser. 
 
 

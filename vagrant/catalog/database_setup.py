@@ -44,9 +44,10 @@ class App(Base):
     price = Column(String(80))
     website = Column(String(250))
     category_id = Column(Integer,ForeignKey('category.id'))
-    category = relationship(Category)
+    category = relationship("Category", 
+      backref=backref("App",cascade = "all, delete-orphan"))
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
+    user = relationship("User")
 
     @property
     def serialize(self):

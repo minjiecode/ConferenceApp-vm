@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, asc, func
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, App, User
 from flask import session as login_session
+from functools import wraps
 import random
 import string
 
@@ -54,6 +55,15 @@ def getUserID(email):
         print "No User can be found"
         return None
 
+# Check login status
+def login_required(func):
+    @wraps(func)
+    def decorated_func(*args, **kwargs):
+        if "username" not in login_session:
+            return redirect('/login')
+        return func(*args, **kwargs)
+    return decorated_func
+
 
 # Create anti-forgery state token
 @app.route('/login')
@@ -83,17 +93,6 @@ def showLogin():
         print "done!"
         return output
 
-# Reset Session  
-@app.route('/clearsession') 
-def clearSession():
-    del login_session['credentials'] 
-    del login_session['gplus_id']
-    del login_session['username']
-    del login_session['email']
-    del login_session['picture']
-    output = "Session Cleared"
-    output += '<script>setTimeout(function(){ window.location.href="/category";}, 3000)</script>'
-    return output
 
 # Google OAuth
 @app.route('/gconnect', methods=['POST'])
@@ -224,7 +223,7 @@ def gdisconnect():
 
 
 # JSON APIs to view Category Information
-@app.route('/category/<category_name>/apps/JSON')
+@app.route('/category/<path:category_name>/apps/JSON')
 def categoryAppJSON(category_name):
     category = session.query(Category).filter_by(name = category_name).one()
     category_id = category.id
@@ -233,7 +232,7 @@ def categoryAppJSON(category_name):
     return jsonify(apps=[i.serialize for i in apps])
 
 
-@app.route('/category/<category_name>/apps/<app_name>/JSON')
+@app.route('/category/<path:category_name>/apps/<path:app_name>/JSON')
 def appJSON(category_name, app_name):
     app = session.query(App).filter_by(name = app_name).one()
     return jsonify(app=app.serialize)
@@ -262,8 +261,8 @@ def showCategories():
             categories=categories, apps= apps)
 
 # Show apps in a specific category
-@app.route('/category/<category_name>/')
-# @app.route('/category/<category_name>/apps/')
+@app.route('/category/<path:category_name>/')
+@app.route('/category/<path:category_name>/apps/')
 def showApp(category_name):
     categories = session.query(Category).order_by(asc(Category.name))
     category = session.query(Category).filter_by(name = category_name).one()
@@ -281,7 +280,7 @@ def showApp(category_name):
         return render_template('apps.html', apps=apps, category=category,
             count = count_record, categories = categories) 
 
-@app.route('/category/<category_name>/apps/<app_name>/')
+@app.route('/category/<path:category_name>/apps/<path:app_name>/')
 def showAppDetails(category_name, app_name):
     app = session.query(App).filter_by(name = app_name).one()
     category = session.query(Category).filter_by(name = category_name).one()
@@ -292,12 +291,14 @@ def showAppDetails(category_name, app_name):
         return render_template('appdetails.html', app = app, category = category)
 
 # Create a new App item global
+
 @app.route('/category/apps/new/', methods=['GET', 'POST'])
+@login_required
 def newApp():
-    if "username" not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         name = request.form['name']
+
+        # Check to ensure no duplicate
         if session.query(App).filter_by(name = name).count():
             flash("An App with the same name existed.")
             return redirect(url_for('newApp'))
@@ -315,14 +316,14 @@ def newApp():
         return render_template('newApp.html')
 
 # Create a new App item within a category
-@app.route('/category/<category_name>/apps/new/', methods=['GET', 'POST'])
+
+@app.route('/category/<path:category_name>/apps/new/', methods=['GET', 'POST'])
+@login_required
 def newAppInCategory(category_name):
-    if "username" not in login_session:
-        return redirect('/login')
     category = session.query(Category).filter_by(name=category_name).one()
     category_id = category.id
     if request.method == 'POST':
-        # Check if the app existed.
+        # Check if the app existed. prevent duplicate
         name = request.form['name']
         if session.query(App).filter_by(name = name).count():
             flash("An App with the same name existed.")
@@ -346,9 +347,9 @@ def newAppInCategory(category_name):
 
 # Edit a App item
 
-
-@app.route('/category/<category_name>/apps/<app_name>/edit', 
+@app.route('/category/<path:category_name>/apps/<path:app_name>/edit', 
     methods=['GET', 'POST'])
+@login_required
 def editApp(category_name, app_name):
     editedapp = session.query(App).filter_by(name = app_name).one()
     category = session.query(Category).filter_by(name = category_name).one()
@@ -378,8 +379,10 @@ def editApp(category_name, app_name):
 
 
 # Delete a App item
-@app.route('/category/<category_name>/apps/<app_name>/delete', 
+
+@app.route('/category/<path:category_name>/apps/<path:app_name>/delete', 
     methods=['GET', 'POST'])
+@login_required
 def deleteApp(category_name, app_name):
     category = session.query(Category).filter_by(name=category_name).one()
     appToDelete = session.query(App).filter_by(name = app_name).one()
