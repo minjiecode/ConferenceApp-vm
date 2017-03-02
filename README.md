@@ -1,5 +1,4 @@
 ## Projects for Udacity Full Stack Web Developer Nanodegree
-> ###Full Stack Web Developer
 
 Including 
 
