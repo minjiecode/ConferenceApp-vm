@@ -1,7 +1,6 @@
 ##Discover Virtual Reality
 
 **Discover Virtual Reality** is a web app that intend to be used as an archive for virtual reality apps. 
-The current version only supports even number of players. 
 
 > \**This is a project for the Udacity Nanodegree Course*
 
